@@ -3,6 +3,8 @@ import axios from "axios";
 import cheerio from "cheerio";
 import { PerTypeInfo } from "./types";
 import { getPerTypeData, getTypeListData } from "./perType";
+import { writeJson } from "./write";
+import { getDetailInfo } from "./getDetailInfo";
 export const baseUrl = `https://www2.scut.edu.cn`;
 // 获取仪器列表
 
@@ -28,12 +30,21 @@ async function getTypeList() {
 async function app() {
   const typeList = await getTypeList();
   const perTyepData = await getTypeListData(typeList);
-  console.log(perTyepData, perTyepData.length);
+  console.log("一共", perTyepData, perTyepData.length, "个");
+  writeJson(perTyepData);
 }
-app();
+console.log(app);
+// app();
 // getTypeList();
 // get();
 // getPerTypeData({
 //   type: "动物实验平台",
 //   url: "https://www2.scut.edu.cn/mdrtc/swxsypt/list.htm",
 // });
+getDetailInfo({
+  name: "高效液相色谱仪",
+  desUrl: "https://www2.scut.edu.cn/mdrtc/2021/0826/c30057a439297/page.htm",
+  imgUrl:
+    "https://www2.scut.edu.cn/_upload/article/images/fc/fc/ae4a885c481980e1fdee2c6ffe27/0db5a9b9-e26d-4746-a4a7-fe47828026a8_s.jpg",
+  type: "化学表征平台",
+});

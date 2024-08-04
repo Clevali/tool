@@ -36,70 +36,75 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.baseUrl = void 0;
-// import request from "request";
+exports.getDetailInfo = getDetailInfo;
 var axios_1 = require("axios");
 var cheerio_1 = require("cheerio");
-var perType_1 = require("./perType");
-var write_1 = require("./write");
-var getDetailInfo_1 = require("./getDetailInfo");
-exports.baseUrl = "https://www2.scut.edu.cn";
-// 获取仪器列表
-function getTypeList() {
+function getDetailInfo(perTypeInfoItem) {
     return __awaiter(this, void 0, void 0, function () {
-        var items, res, $_1;
+        var perRes, $, result, arr;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    items = [];
-                    return [4 /*yield*/, (0, axios_1.default)("".concat(exports.baseUrl, "/mdrtc/jyjc/list.htm"))];
+                case 0: return [4 /*yield*/, (0, axios_1.default)(perTypeInfoItem.desUrl)];
                 case 1:
-                    res = _a.sent();
-                    // console.log(res.data);
-                    if (res.data) {
-                        $_1 = cheerio_1.default.load(res.data);
-                        $_1(".sub-item").each(function (i, el) {
-                            console.log("iii", i);
-                            var type = $_1(el).text().trim();
-                            var href = $_1(el).find(".sub-item-link").attr("href");
-                            items.push({ type: type, url: "".concat(exports.baseUrl).concat(href) });
+                    perRes = _a.sent();
+                    $ = (0, cheerio_1.load)(perRes.data);
+                    result = {
+                        name: perTypeInfoItem.name,
+                        imgUrl: perTypeInfoItem.imgUrl,
+                        type: perTypeInfoItem.type,
+                        model: "",
+                        usName: "",
+                        factory: "",
+                        useTo: "",
+                        mainIndicators: [],
+                        principle: "",
+                        need: "",
+                    };
+                    arr = [];
+                    $(".wp_articlecontent").each(function (i, el) {
+                        var _a;
+                        var text = $(el).text().trim();
+                        // let str = "";
+                        // text.split("  ").forEach((item, index) => {});
+                        //   const regex = /仪器型号：(.+?)生产厂家/g;
+                        result.usName = matchStr({
+                            reg: /\s+([a-zA-Z]+|\s+)\s+/,
+                            text: text,
                         });
-                    }
-                    console.log("仪器平台列表", items);
-                    return [2 /*return*/, items];
-            }
-        });
-    });
-}
-function app() {
-    return __awaiter(this, void 0, void 0, function () {
-        var typeList, perTyepData;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, getTypeList()];
-                case 1:
-                    typeList = _a.sent();
-                    return [4 /*yield*/, (0, perType_1.getTypeListData)(typeList)];
-                case 2:
-                    perTyepData = _a.sent();
-                    console.log("一共", perTyepData, perTyepData.length, "个");
-                    (0, write_1.writeJson)(perTyepData);
+                        result.model = matchStr({
+                            reg: /仪器型号：(.+?)生产厂家/g,
+                            text: text,
+                        });
+                        result.factory = matchStr({
+                            reg: /生产厂家：(.+?) 一、功能用途：/g,
+                            text: text,
+                        });
+                        result.useTo = matchStr({
+                            reg: /功能用途：(.+?)二、主要技术指标：/g,
+                            text: text,
+                        });
+                        result.mainIndicators = (_a = matchStr({
+                            reg: /主要技术指标：(.+?)三、工作原理：/g,
+                            text: text,
+                        })) === null || _a === void 0 ? void 0 : _a.split("；");
+                        result.principle = matchStr({
+                            reg: /工作原理：(.+?)四、送样要求：/g,
+                            text: text,
+                        });
+                        result.need = matchStr({
+                            reg: /四、送样要求：(.+?)$/g,
+                            text: text,
+                        });
+                        console.log(result);
+                    });
                     return [2 /*return*/];
             }
         });
     });
 }
-console.log(app);
-// app();
-// getTypeList();
-// get();
-// getPerTypeData({
-//   type: "动物实验平台",
-//   url: "https://www2.scut.edu.cn/mdrtc/swxsypt/list.htm",
-// });
-(0, getDetailInfo_1.getDetailInfo)({
-    name: "高效液相色谱仪",
-    desUrl: "https://www2.scut.edu.cn/mdrtc/2021/0826/c30057a439297/page.htm",
-    imgUrl: "https://www2.scut.edu.cn/_upload/article/images/fc/fc/ae4a885c481980e1fdee2c6ffe27/0db5a9b9-e26d-4746-a4a7-fe47828026a8_s.jpg",
-    type: "化学表征平台",
-});
+function matchStr(params) {
+    var _a;
+    var reg = params.reg, text = params.text;
+    var match = reg.exec(text);
+    return ((_a = match === null || match === void 0 ? void 0 : match[1]) === null || _a === void 0 ? void 0 : _a.trim()) || "";
+}

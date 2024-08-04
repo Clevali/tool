@@ -56,33 +56,59 @@ function getTypeListData(typeArr) {
 }
 function getPerTypeData(perItem) {
     return __awaiter(this, void 0, void 0, function () {
-        var perRes, $, block, res;
+        var res, currentLength, pageSize, index, _loop_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, (0, axios_1.default)(perItem.url)];
-                case 1:
-                    perRes = _a.sent();
-                    $ = (0, cheerio_1.load)(perRes.data);
-                    block = $(".wp_listalbumn");
-                    console.log(block.length);
+                case 0:
                     res = [];
-                    if (block) {
-                        block.each(function (i, el) {
-                            var name = $(el).text().trim();
-                            var desUrl = $(el).find("a").attr("href");
-                            var imgUrl = $(el).find("img").attr("src");
-                            //   console.log("type", desUrl);
-                            //   console.log("type", imgUrl);
-                            res.push({
-                                name: name,
-                                desUrl: "".concat(parse_1.baseUrl).concat(desUrl),
-                                imgUrl: "".concat(parse_1.baseUrl).concat(imgUrl),
-                                type: perItem.type,
-                            });
-                            // items.push({ type, url: `${baseUrl}${href}` });
+                    currentLength = 0;
+                    pageSize = perItem.type === "材料表征平台" ? 12 : 16;
+                    index = 0;
+                    _loop_1 = function () {
+                        var pageStr, perRes, $, block;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
+                                case 0:
+                                    pageStr = "list".concat(index || "", ".htm");
+                                    return [4 /*yield*/, (0, axios_1.default)(perItem.url.replace("list.htm", "list".concat(index || "", ".htm")))];
+                                case 1:
+                                    perRes = _b.sent();
+                                    $ = (0, cheerio_1.load)(perRes.data);
+                                    block = $(".Article_MicroImage");
+                                    currentLength = block.length || 0;
+                                    console.log("currentLength", perItem.type, pageStr, currentLength);
+                                    if (block.length) {
+                                        block.each(function (i, el) {
+                                            var name = $(el).find("a").attr("title");
+                                            var desUrl = $(el).find("a").attr("href");
+                                            var imgUrl = $(el).find("img").attr("src");
+                                            res.push({
+                                                name: name,
+                                                desUrl: "".concat(parse_1.baseUrl).concat(desUrl),
+                                                imgUrl: "".concat(parse_1.baseUrl).concat(imgUrl),
+                                                type: perItem.type,
+                                            });
+                                        });
+                                        if (index === 0) {
+                                            index = index + 2;
+                                        }
+                                        else {
+                                            index++;
+                                        }
+                                    }
+                                    return [2 /*return*/];
+                            }
                         });
-                    }
-                    return [2 /*return*/, res];
+                    };
+                    _a.label = 1;
+                case 1: return [5 /*yield**/, _loop_1()];
+                case 2:
+                    _a.sent();
+                    _a.label = 3;
+                case 3:
+                    if (currentLength && currentLength === pageSize) return [3 /*break*/, 1];
+                    _a.label = 4;
+                case 4: return [2 /*return*/, res];
             }
         });
     });
