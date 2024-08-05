@@ -35,13 +35,73 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getAllDetailInfo = getAllDetailInfo;
 exports.getDetailInfo = getDetailInfo;
 var axios_1 = require("axios");
 var cheerio_1 = require("cheerio");
+// import asyncPool from "tiny-async-pool";
+function getAllDetailInfo(list) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result, item, res, e_1_1;
+        var _a, list_1, list_1_1;
+        var _b, e_1, _c, _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
+                case 0:
+                    result = [];
+                    _e.label = 1;
+                case 1:
+                    _e.trys.push([1, 7, 8, 13]);
+                    _a = true, list_1 = __asyncValues(list);
+                    _e.label = 2;
+                case 2: return [4 /*yield*/, list_1.next()];
+                case 3:
+                    if (!(list_1_1 = _e.sent(), _b = list_1_1.done, !_b)) return [3 /*break*/, 6];
+                    _d = list_1_1.value;
+                    _a = false;
+                    item = _d;
+                    console.log("item,", item);
+                    return [4 /*yield*/, getDetailInfo(item)];
+                case 4:
+                    res = _e.sent();
+                    result.push(res);
+                    _e.label = 5;
+                case 5:
+                    _a = true;
+                    return [3 /*break*/, 2];
+                case 6: return [3 /*break*/, 13];
+                case 7:
+                    e_1_1 = _e.sent();
+                    e_1 = { error: e_1_1 };
+                    return [3 /*break*/, 13];
+                case 8:
+                    _e.trys.push([8, , 11, 12]);
+                    if (!(!_a && !_b && (_c = list_1.return))) return [3 /*break*/, 10];
+                    return [4 /*yield*/, _c.call(list_1)];
+                case 9:
+                    _e.sent();
+                    _e.label = 10;
+                case 10: return [3 /*break*/, 12];
+                case 11:
+                    if (e_1) throw e_1.error;
+                    return [7 /*endfinally*/];
+                case 12: return [7 /*endfinally*/];
+                case 13: return [2 /*return*/, result];
+            }
+        });
+    });
+}
 function getDetailInfo(perTypeInfoItem) {
     return __awaiter(this, void 0, void 0, function () {
-        var perRes, $, result, arr;
+        var perRes, $, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, (0, axios_1.default)(perTypeInfoItem.desUrl)];
@@ -52,6 +112,7 @@ function getDetailInfo(perTypeInfoItem) {
                         name: perTypeInfoItem.name,
                         imgUrl: perTypeInfoItem.imgUrl,
                         type: perTypeInfoItem.type,
+                        desUrl: perTypeInfoItem.desUrl,
                         model: "",
                         usName: "",
                         factory: "",
@@ -60,15 +121,18 @@ function getDetailInfo(perTypeInfoItem) {
                         principle: "",
                         need: "",
                     };
-                    arr = [];
                     $(".wp_articlecontent").each(function (i, el) {
                         var _a;
                         var text = $(el).text().trim();
                         // let str = "";
                         // text.split("  ").forEach((item, index) => {});
                         //   const regex = /仪器型号：(.+?)生产厂家/g;
+                        console.log(text);
                         result.usName = matchStr({
-                            reg: /\s+([a-zA-Z]+|\s+)\s+/,
+                            // reg: /\b[a-zA-Z]+\s+[a-zA-Z]+\b/,
+                            reg: /\s+(([a-zA-Z]+)|(\s+))*\s+/,
+                            render: function (arr) { var _a; return ((_a = arr === null || arr === void 0 ? void 0 : arr[0]) === null || _a === void 0 ? void 0 : _a.trim()) || ""; },
+                            // log: true,
                             text: text,
                         });
                         result.model = matchStr({
@@ -76,7 +140,7 @@ function getDetailInfo(perTypeInfoItem) {
                             text: text,
                         });
                         result.factory = matchStr({
-                            reg: /生产厂家：(.+?) 一、功能用途：/g,
+                            reg: /生产厂家：(.+?)\s/g,
                             text: text,
                         });
                         result.useTo = matchStr({
@@ -86,7 +150,7 @@ function getDetailInfo(perTypeInfoItem) {
                         result.mainIndicators = (_a = matchStr({
                             reg: /主要技术指标：(.+?)三、工作原理：/g,
                             text: text,
-                        })) === null || _a === void 0 ? void 0 : _a.split("；");
+                        })) === null || _a === void 0 ? void 0 : _a.split("；").filter(Boolean);
                         result.principle = matchStr({
                             reg: /工作原理：(.+?)四、送样要求：/g,
                             text: text,
@@ -95,16 +159,22 @@ function getDetailInfo(perTypeInfoItem) {
                             reg: /四、送样要求：(.+?)$/g,
                             text: text,
                         });
-                        console.log(result);
                     });
-                    return [2 /*return*/];
+                    // console.log(result);
+                    return [2 /*return*/, result];
             }
         });
     });
 }
 function matchStr(params) {
     var _a;
-    var reg = params.reg, text = params.text;
+    var reg = params.reg, text = params.text, log = params.log, render = params.render;
     var match = reg.exec(text);
+    if (log) {
+        console.log(match);
+    }
+    if (render) {
+        return render(match);
+    }
     return ((_a = match === null || match === void 0 ? void 0 : match[1]) === null || _a === void 0 ? void 0 : _a.trim()) || "";
 }

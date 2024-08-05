@@ -73,7 +73,7 @@ function getTypeList() {
 }
 function app() {
     return __awaiter(this, void 0, void 0, function () {
-        var typeList, perTyepData;
+        var typeList, list, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, getTypeList()];
@@ -81,25 +81,29 @@ function app() {
                     typeList = _a.sent();
                     return [4 /*yield*/, (0, perType_1.getTypeListData)(typeList)];
                 case 2:
-                    perTyepData = _a.sent();
-                    console.log("一共", perTyepData, perTyepData.length, "个");
-                    (0, write_1.writeJson)(perTyepData);
+                    list = _a.sent();
+                    console.log("一共", list.length, "个");
+                    return [4 /*yield*/, (0, getDetailInfo_1.getAllDetailInfo)(list)];
+                case 3:
+                    result = _a.sent();
+                    (0, write_1.writeJson)(result, "result.json");
                     return [2 /*return*/];
             }
         });
     });
 }
 console.log(app);
-// app();
+app();
 // getTypeList();
 // get();
 // getPerTypeData({
 //   type: "动物实验平台",
 //   url: "https://www2.scut.edu.cn/mdrtc/swxsypt/list.htm",
 // });
-(0, getDetailInfo_1.getDetailInfo)({
-    name: "高效液相色谱仪",
-    desUrl: "https://www2.scut.edu.cn/mdrtc/2021/0826/c30057a439297/page.htm",
-    imgUrl: "https://www2.scut.edu.cn/_upload/article/images/fc/fc/ae4a885c481980e1fdee2c6ffe27/0db5a9b9-e26d-4746-a4a7-fe47828026a8_s.jpg",
-    type: "化学表征平台",
-});
+// getDetailInfo({
+//   name: "高效液相色谱仪",
+//   desUrl: "https://www2.scut.edu.cn/mdrtc/2021/0826/c30057a439297/page.htm",
+//   imgUrl:
+//     "https://www2.scut.edu.cn/_upload/article/images/fc/fc/ae4a885c481980e1fdee2c6ffe27/0db5a9b9-e26d-4746-a4a7-fe47828026a8_s.jpg",
+//   type: "化学表征平台",
+// });

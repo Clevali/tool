@@ -427,6 +427,11 @@ sshpk@^1.7.0:
     safer-buffer "^2.0.2"
     tweetnacl "~0.14.0"
 
+tiny-async-pool@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/tiny-async-pool/-/tiny-async-pool-2.1.0.tgz#3ec126568c18a7916912fb9fbecf812337ec6b84"
+  integrity sha512-ltAHPh/9k0STRQqaoUX52NH4ZQYAJz24ZAEwf1Zm+HYg3l9OXTWeqWKyYsHu40wF/F0rxd2N2bk5sLvX2qlSvg==
+
 tough-cookie@~2.5.0:
   version "2.5.0"
   resolved "https://registry.npmmirror.com/tough-cookie/-/tough-cookie-2.5.0.tgz"

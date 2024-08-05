@@ -20,4 +20,5 @@ export interface PerDetailInfo {
   mainIndicators: string[]; // 主要技术指标
   principle: string; // 工作原理
   need: string; // 送样要求
+  desUrl: string; // 描述地址
 }
